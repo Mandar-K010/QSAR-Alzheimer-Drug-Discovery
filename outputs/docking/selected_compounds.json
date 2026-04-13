@@ -1,0 +1,23 @@
+{
+  "active": {
+    "smiles": "COc1ccccc1C(C)NS(N)(=O)=O",
+    "pIC50": 10.571055709964426,
+    "prob_active": 0.95,
+    "chembl_id": "CHEMBL3585780"
+  },
+  "inactive": {
+    "smiles": "COc1ccccc1CNCCCCCCNCCSSCCNCCCCCCNCc1ccccc1OC",
+    "pIC50": 1.0,
+    "prob_active": 0.16266666666666668,
+    "chembl_id": "CHEMBL19060"
+  },
+  "grid_box": {
+    "center_x": -8.471,
+    "center_y": -41.155,
+    "center_z": -37.05,
+    "size_x": 70,
+    "size_y": 46,
+    "size_z": 40
+  },
+  "protein_pdb": "4EY7.pdb"
+}

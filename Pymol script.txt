@@ -1,0 +1,16 @@
+load C:/Users/manda/Downloads/RT project 2/4EY7.pdb
+
+show surface
+
+color cyan
+util.cbaw
+
+load C:/Users/manda/Downloads/RT project 2/outputs/docking/active_docked.pdbqt
+
+show sticks, active_docked
+color yellow, active_docked
+
+zoom active_docked, 10
+
+ray 1200, 900
+png C:/Users/manda/Downloads/RT project 2/outputs/docking/docking_3d.png

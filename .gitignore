@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Large binary files
+vina.exe
+vina_1.2.7_win.exe
+4EY7.pdb
+
+# Saved models (too large)
+outputs/models/*.pkl
+
+# OS files
+.DS_Store
+Thumbs.db

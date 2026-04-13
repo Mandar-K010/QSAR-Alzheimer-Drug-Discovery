@@ -1,0 +1,113 @@
+# ══════════════════════════════════════════════════════════════════
+# QSAR Drug Discovery Pipeline — Requirements
+# ══════════════════════════════════════════════════════════════════
+#
+# Python Version: 3.9 or higher (3.10-3.12 recommended)
+#
+# Install all:
+#   pip install -r requirements.txt
+#
+# If rdkit-pypi fails, try conda instead:
+#   conda install -c conda-forge rdkit
+#   pip install -r requirements.txt  (skip rdkit-pypi line)
+#
+# ══════════════════════════════════════════════════════════════════
+
+
+# ── Core Data & Math ──────────────────────────────────────────────
+# Used by: ALL three scripts
+
+numpy>=1.23,<2.0              # Array operations, fingerprint matrices
+pandas>=1.5                   # CSV loading, dataframe manipulation
+scipy>=1.9                    # Mann-Whitney U test (scipy.stats)
+
+
+# ── Machine Learning ─────────────────────────────────────────────
+# Used by: qsar_completes.py, addon_features.py
+
+scikit-learn>=1.2             # RandomForest, KFold, ROC-AUC, F1
+
+
+# ── Chemistry / Cheminformatics ──────────────────────────────────
+# Used by: ALL three scripts
+# NOTE: If pip install fails, use: conda install -c conda-forge rdkit
+
+rdkit-pypi>=2022.9.1          # Molecule parsing, Morgan fingerprints,
+                              # Lipinski descriptors, 3D embedding,
+                              # DrawMorganBit, MolDraw2DCairo
+
+
+# ── Visualization ────────────────────────────────────────────────
+# Used by: ALL three scripts
+
+matplotlib>=3.6               # All plots, bar charts, ROC curves
+seaborn>=0.12                 # Used alongside matplotlib in Step 1
+Pillow>=9.0                   # Image handling for substructure grid,
+                              # SHAP force plot compositing
+
+
+# ── Model Interpretation ─────────────────────────────────────────
+# Used by: qsar_completes.py, addon_features.py
+
+shap>=0.42                    # TreeExplainer, force plots, summary plots
+
+
+# ── Docking (Optional) ──────────────────────────────────────────
+# Used by: docking_meeko.py
+# These are OPTIONAL — the script has manual fallbacks if missing.
+# Install them for better PDBQT file quality.
+
+meeko>=0.5                    # SDF → PDBQT conversion (best quality)
+                              # Provides mk_prepare_receptor.py and
+                              # mk_prepare_ligand.py scripts
+
+# openbabel is hard to pip install — use conda if needed:
+#   conda install -c conda-forge openbabel
+# It serves as a fallback PDBQT converter if meeko fails.
+
+
+# ══════════════════════════════════════════════════════════════════
+# EXTERNAL (non-Python) DEPENDENCIES
+# ══════════════════════════════════════════════════════════════════
+#
+# 1. AutoDock Vina (required for Step 3 docking)
+#    Download: https://github.com/ccsb-scripps/AutoDock-Vina/releases
+#    Place the executable (vina or vina.exe) in the project directory.
+#    The script auto-detects it on Windows, Linux, and Mac.
+#
+# 2. Protein Structure File (required for Step 3)
+#    File: 4EY7.pdb
+#    Download: https://www.rcsb.org/structure/4EY7
+#    Place in the project directory.
+#
+# 3. Dataset (required for all steps)
+#    File: acetylcholinesterase_bioactivity_data_3class_pIC50.csv
+#    Must be in the project directory.
+#
+# 4. PyMOL (optional, for 3D visualization of docking results)
+#    Download: https://pymol.org
+#    Used to visualize receptor + docked ligand after Step 3.
+#
+# ══════════════════════════════════════════════════════════════════
+# QUICK START
+# ══════════════════════════════════════════════════════════════════
+#
+# 1. pip install -r requirements.txt
+# 2. Place these files in one folder:
+#      main.py
+#      qsar_completes.py
+#      addon_features.py
+#      docking_meeko.py
+#      acetylcholinesterase_bioactivity_data_3class_pIC50.csv
+#      4EY7.pdb
+#      vina.exe (or vina for Linux/Mac)
+# 3. python main.py --check    (verify everything)
+# 4. python main.py            (run full pipeline)
+#
+# To run individual steps:
+#      python main.py 1         (QSAR only)
+#      python main.py 2         (addon features only)
+#      python main.py 3         (docking only)
+#      python main.py 1 2       (Steps 1 and 2)
+#
+# ══════════════════════════════════════════════════════════════════

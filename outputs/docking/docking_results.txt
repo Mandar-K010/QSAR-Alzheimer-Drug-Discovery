@@ -1,0 +1,6 @@
+DOCKING RESULTS
+===============
+Active:   -6.778 kcal/mol (pIC50=10.5711)
+Inactive: -6.972 kcal/mol (pIC50=1.0000)
+
+Reference: Active=-13.18, Inactive=-5.845 kcal/mol

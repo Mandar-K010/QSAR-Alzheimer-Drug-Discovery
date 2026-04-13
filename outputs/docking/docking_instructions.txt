@@ -1,0 +1,14 @@
+MOLECULAR DOCKING INFORMATION
+==============================
+Target: Acetylcholinesterase (AChE) — PDB: 4EY7
+Grid Box: center=(-8.471, -41.155, -37.05), size=(70, 46, 40)
+
+Active:   SMILES=COc1ccccc1C(C)NS(N)(=O)=O
+          pIC50=10.5711, P(Active)=95.00%
+
+Inactive: SMILES=COc1ccccc1CNCCCCCCNCCSSCCNCCCCCCNCc1ccccc1OC
+          pIC50=1.0000, P(Active)=16.27%
+
+Next: python docking_meeko.py (reads selected_compounds.json)
+
+Paper Reference: Active=-13.18 kcal/mol, Inactive=-5.845 kcal/mol

@@ -1,0 +1,452 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\Users\manda\Downloads\RT project 2> Python main.py
+======================================================================
+  QSAR Drug Discovery Pipeline — Alzheimer's (AChE Inhibitors)
+======================================================================
+  Python  : 3.14.0
+  Working : C:\Users\manda\Downloads\RT project 2
+
+  Checking Python packages...
+    ✅ pandas
+    ✅ numpy
+    ✅ matplotlib
+    ✅ seaborn
+    ✅ scipy
+    ✅ scikit-learn
+    ✅ rdkit
+    ✅ shap
+    ✅ Pillow
+
+  Optional packages (for docking):
+    ✅ meeko
+    ⚠️  openbabel — not installed (manual fallback will be used)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Step 1: qsar_completes.py
+  QSAR modeling, Lipinski, Mann-Whitney, Morgan FP, RF training, SHAP, feature importance
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+=================================================================
+  QSAR Alzheimer Drug Discovery Pipeline
+=================================================================
+
+[STEP 1] Loading and Cleaning Data...
+---------------------------------------------
+  Raw dataset shape    : (3597, 9)
+  Columns              : ['Unnamed: 0', 'molecule_chembl_id', 'bioactivity_class', 'canonical_smiles', 'MW', 'LogP', 'NumHDonors', 'NumHAcceptors', 'pIC50']
+  Bioactivity classes  : {'active': 1483, 'inactive': 1245, 'intermediate': 869}
+
+  After cleaning:
+    Total compounds    : 2728
+    Active compounds   : 1483
+    Inactive compounds : 1245
+
+[STEP 2] Calculating Lipinski Descriptors...
+---------------------------------------------
+  Drug-like (pass) : 1671
+  Not drug-like    : 1057
+
+  Means by class:
+                       MW  LogP  NumHDonors  NumHAcceptors
+bioactivity_class
+active             385.10  4.23        1.04           4.16
+inactive           408.59  4.53        1.20           4.29
+
+  Saved: outputs/lipinski_descriptors.png
+
+[STEP 3] Mann-Whitney U Test...
+---------------------------------------------
+
+  Feature                 Statistic      P-value    Significant?
+  ──────────────────────────────────────────────────────────────
+  pIC50                    882716.5     0.048372    YES (p<0.05)
+  MW                       823729.0     0.000001    YES (p<0.05)
+  NumHDonors               850778.5     0.000198    YES (p<0.05)
+  NumHAcceptors            872641.5     0.012209    YES (p<0.05)
+  LogP                     859996.5     0.002051    YES (p<0.05)
+  Saved: outputs/mannwhitney_distributions.png
+
+[STEP 4] Morgan Fingerprints...
+---------------------------------------------
+  Settings: radius=2, n_bits=1024
+  Feature matrix : (2728, 1024)
+  Active=1483, Inactive=1245
+  Avg bits ON    : 46.7 / 1024 (4.6%)
+  Saved: outputs/morgan_fingerprints.csv ((2728, 1028))
+  Saved: outputs/fingerprint_analysis.png
+
+[STEP 5 & 6] Training + 10-Fold Cross Validation...
+---------------------------------------------
+
+  [A] Random Forest Regression
+  Fold           MAPE         R2
+  ──────────────────────────────
+  Fold-1     12.0399%     0.7120
+  Fold-2     10.9794%     0.6642
+  Fold-3      9.1465%     0.7831
+  Fold-4     11.8448%     0.7092
+  Fold-5     11.6691%     0.7113
+  Fold-6     10.2975%     0.7449
+  Fold-7     11.7864%     0.7728
+  Fold-8     12.6584%     0.7083
+  Fold-9     14.0297%     0.7069
+  Fold-10    10.9120%     0.7233
+  ──────────────────────────────
+  Avg        11.5364%     0.7236
+
+  [B] Random Forest Classification
+  Fold        AUC-ROC         F1
+  ──────────────────────────────
+  Fold-1       0.8132     0.7390
+  Fold-2       0.8041     0.7372
+  Fold-3       0.8075     0.7254
+  Fold-4       0.8107     0.7774
+  Fold-5       0.8287     0.7770
+  Fold-6       0.8430     0.7635
+  Fold-7       0.7989     0.7669
+  Fold-8       0.8429     0.8137
+  Fold-9       0.8081     0.7873
+  Fold-10      0.8118     0.7647
+  ──────────────────────────────
+  Avg          0.8169     0.7652
+
+  Generating evaluation graphs...
+  Saved: outputs/evaluation_metrics.png
+  Saved: outputs/roc_curve.png
+  Saved: outputs/actual_vs_predicted.png
+
+[STEP 7A] SHAP Interpretation...
+---------------------------------------------
+  Computing SHAP values...
+  SHAP values computed!
+  Saved: outputs/shap_global_summary.png
+  Saved: outputs/shap_dot_plot.png
+<IPython.core.display.HTML object>
+  Saved: outputs/shap_force_active.html
+  Saved: outputs/shap_force_inactive.html
+
+  Top 10 SHAP Features:
+    1. FP_92 = 439781.258306
+    2. FP_703 = 429719.742165
+    3. FP_558 = 402413.880070
+    4. FP_585 = 401394.978349
+    5. FP_222 = 340754.900980
+    6. FP_471 = 340541.274020
+    7. FP_10 = 337917.131438
+    8. FP_532 = 335968.528222
+    9. FP_413 = 334463.520783
+    10. FP_697 = 332383.946679
+
+[STEP 7B] Feature Importance Analysis...
+---------------------------------------------
+
+  Top 10 — Classification:
+    1. FP_119 = 0.005955
+    2. FP_2 = 0.005132
+    3. FP_175 = 0.005003
+    4. FP_64 = 0.004900
+    5. FP_389 = 0.004886
+    6. FP_831 = 0.004228
+    7. FP_887 = 0.004192
+    8. FP_875 = 0.004102
+    9. FP_512 = 0.004081
+    10. FP_463 = 0.004069
+
+  Top 10 — Regression:
+    1. FP_304 = 0.131732
+    2. FP_832 = 0.064641
+    3. FP_734 = 0.060970
+    4. FP_668 = 0.037767
+    5. FP_482 = 0.016690
+    6. FP_343 = 0.015712
+    7. FP_712 = 0.015027
+    8. FP_21 = 0.014153
+    9. FP_40 = 0.012924
+    10. FP_507 = 0.010738
+  Saved: outputs/feature_importance_classification.png
+  Saved: outputs/feature_importance_regression.png
+  Saved: outputs/feature_importance_comparison.png
+
+[STEP 8] Saving Models...
+---------------------------------------------
+  Saved: outputs/models/regression_model.pkl
+  Saved: outputs/models/classification_model.pkl
+  Models verified!
+
+  Predictions:
+  #     pIC50 Class       P(Active)  SMILES
+  ───────────────────────────────────────────────────────────────────────────
+  1    5.7209 Active        83.62%  CCOc1nn(-c2cccc(OCc3ccccc3)c2)c(=O)o1
+  2    6.8847 Active        92.00%  O=C(N1CCCCC1)n1nc(-c2ccc(Cl)cc2)nc1SCC1CC1
+  3    4.3727 Inactive      15.00%  CN(C(=O)n1nc(-c2ccc(Cl)cc2)nc1SCC(F)(F)F)c1ccccc1
+  4    6.0605 Active        85.00%  CSc1nc(-c2ccc(OC(F)(F)F)cc2)nn1C(=O)N(C)C
+  5    4.5120 Inactive      11.00%  CCCCCCSc1nc(-c2ccc(Cl)cc2)nn1C(=O)N1CCOCC1
+
+=================================================================
+  PIPELINE COMPLETE
+=================================================================
+
+  Regression  : MAPE=11.54%, R²=0.7236
+  Classification: AUC=0.8169, F1=0.7652
+
+  Output files in: outputs/
+  Models in      : outputs/models/
+  Next step      : python addon_features.py
+
+
+  ✅ Step 1 completed in 25h 17m 44s 9ms
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Step 2: addon_features.py
+  Molecular substructures, SHAP force plots, docking preparation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+=================================================================
+  ADDON FEATURES — QSAR Alzheimer Project
+=================================================================
+
+[Loading Data & Models...]
+  Loaded 2728 compounds, models OK
+
+============================================================
+  PART A: Molecular Substructure Diagrams
+============================================================
+
+[A.1] Generating OLD API fingerprints...
+  2728 compounds, 1024 non-zero bits
+
+[A.2] Training RF on OLD API fingerprints...
+  Top 20 bits: [np.int64(119), np.int64(64), np.int64(175), np.int64(2), np.int64(887), np.int64(875), np.int64(389), np.int64(33), np.int64(831), np.int64(128), np.int64(310), np.int64(881), np.int64(212), np.int64(74), np.int64(512), np.int64(698), np.int64(841), np.int64(15), np.int64(592), np.int64(121)]
+
+[A.3] Drawing substructures...
+  Drew 20/20 substructures
+
+[A.4] Creating 4x5 grid...
+  Saved: outputs/molecular_substructures_top20.png
+
+============================================================
+  PART B: SHAP Force Plots (10 Active + 10 Inactive)
+============================================================
+  Computing SHAP values...
+  SHAP done!
+  Generating Active force plots...
+  Generating Inactive force plots...
+  Creating combined summary...
+  Saved: outputs/shap_force_plots_summary.png
+
+============================================================
+  PART C: Molecular Docking Preparation
+============================================================
+
+  Active   : pIC50=10.5711, P(Active)=95.00%
+  Inactive : pIC50=1.0000, P(Active)=16.27%
+  Saved: outputs/docking/selected_compounds.json
+  Saved: outputs/docking/active_ligand.sdf
+  Saved: outputs/docking/inactive_ligand.sdf
+  Saved: outputs/docking/docking_compounds_2d.png
+
+=================================================================
+  ADDON FEATURES COMPLETE!
+=================================================================
+
+  Part A: outputs/molecular_substructures_top20.png
+  Part B: outputs/shap_force_plots_summary.png
+  Part C: outputs/docking/selected_compounds.json
+
+  Next: python docking_meeko.py
+
+
+  ✅ Step 2 completed in 11h 29m 20s 214ms
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Step 3: docking_meeko.py
+  Receptor/ligand prep, AutoDock Vina docking, results visualization
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+============================================================
+  MOLECULAR DOCKING — AutoDock Vina
+============================================================
+
+[Loading Compounds...]
+  Loaded from: outputs/docking/selected_compounds.json
+  Active   : pIC50=10.5711 | COc1ccccc1C(C)NS(N)(=O)=O...
+  Inactive : pIC50=1.0000 | COc1ccccc1CNCCCCCCNCCSSCCNCCCCCCNCc1ccccc1OC...
+
+[Detecting Vina...]
+  Found: vina.exe (Windows)
+
+[STEP 1] Preparing Receptor (4EY7.pdb)...
+  Done (manual): outputs/docking/receptor.pdbqt
+
+[STEP 2] Preparing Ligands...
+  active_ligand: OK (meeko API)
+  inactive_ligand: OK (meeko API)
+
+[STEP 3] Running AutoDock Vina...
+
+  Docking ACTIVE...
+  Return code: 0
+AutoDock Vina v1.2.7
+#################################################################
+# If you used AutoDock Vina in your work, please cite:          #
+#                                                               #
+# J. Eberhardt, D. Santos-Martins, A. F. Tillack, and S. Forli  #
+# AutoDock Vina 1.2.0: New Docking Methods, Expanded Force      #
+# Field, and Python Bindings, J. Chem. Inf. Model. (2021)       #
+# DOI 10.1021/acs.jcim.1c00203                                  #
+#                                                               #
+# O. Trott, A. J. Olson,                                        #
+# AutoDock Vina: improving the speed and accuracy of docking    #
+# with a new scoring function, efficient optimization and       #
+# multithreading, J. Comp. Chem. (2010)                         #
+# DOI 10.1002/jcc.21334                                         #
+#                                                               #
+# Please see https://github.com/ccsb-scripps/AutoDock-Vina for  #
+# more information.                                             #
+#################################################################
+
+Scoring function : vina
+Rigid receptor: outputs/docking/receptor.pdbqt
+Ligand: outputs/docking/active_ligand.pdbqt
+Grid center: X -8.471 Y -41.155 Z -37.05
+Grid size  : X 70 Y 46 Z 40
+Grid space : 0.375
+Exhaustiveness: 8
+CPU: 0
+Verbosity: 1
+
+Computing Vina grid ... done.
+Performing docking (random seed: 1769269269) ...
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+***************************************************
+
+mode |   affinity | dist from best mode
+     | (kcal/mol) | rmsd l.b.| rmsd u.b.
+-----+------------+----------+----------
+   1       -6.778          0          0
+   2       -6.131      1.955      3.157
+   3       -6.069      7.394      9.018
+   4       -5.977      3.441      4.129
+   5       -5.902      9.193      10.59
+   6       -5.683      1.686      2.209
+   7       -5.517       9.09      10.67
+   8       -5.104       11.1      12.84
+   9       -4.942      19.29      19.86
+
+  Best: -6.778 kcal/mol
+
+  Docking INACTIVE...
+  Return code: 0
+AutoDock Vina v1.2.7
+#################################################################
+# If you used AutoDock Vina in your work, please cite:          #
+#                                                               #
+# J. Eberhardt, D. Santos-Martins, A. F. Tillack, and S. Forli  #
+# AutoDock Vina 1.2.0: New Docking Methods, Expanded Force      #
+# Field, and Python Bindings, J. Chem. Inf. Model. (2021)       #
+# DOI 10.1021/acs.jcim.1c00203                                  #
+#                                                               #
+# O. Trott, A. J. Olson,                                        #
+# AutoDock Vina: improving the speed and accuracy of docking    #
+# with a new scoring function, efficient optimization and       #
+# multithreading, J. Comp. Chem. (2010)                         #
+# DOI 10.1002/jcc.21334                                         #
+#                                                               #
+# Please see https://github.com/ccsb-scripps/AutoDock-Vina for  #
+# more information.                                             #
+#################################################################
+
+Scoring function : vina
+Rigid receptor: outputs/docking/receptor.pdbqt
+Ligand: outputs/docking/inactive_ligand.pdbqt
+Grid center: X -8.471 Y -41.155 Z -37.05
+Grid size  : X 70 Y 46 Z 40
+Grid space : 0.375
+Exhaustiveness: 8
+CPU: 0
+Verbosity: 1
+
+Computing Vina grid ... done.
+Performing docking (random seed: -1080159011) ...
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+***************************************************
+
+mode |   affinity | dist from best mode
+     | (kcal/mol) | rmsd l.b.| rmsd u.b.
+-----+------------+----------+----------
+   1       -6.972          0          0
+   2       -6.839      2.725      11.46
+   3        -6.78      3.275      13.21
+   4        -6.75       2.56      3.608
+   5       -6.697      3.269      5.818
+   6       -6.683      2.405      3.555
+   7       -6.671       2.99      12.07
+   8       -6.603      4.045      13.46
+   9       -6.571      4.457      12.82
+
+  Best: -6.972 kcal/mol
+
+[STEP 4] Generating Results...
+  Saved: outputs/docking/docking_results.png
+
+============================================================
+  DONE!
+  Active   : -6.778 kcal/mol
+  Inactive : -6.972 kcal/mol
+  Paper    : Active=-13.18, Inactive=-5.845
+
+  3D visualization in PyMOL:
+    load outputs/docking/receptor.pdbqt
+    load outputs/docking/active_docked.pdbqt
+    show surface, receptor; show sticks, active_docked
+
+  ✅ Step 3 completed in 7h 9m 5s 832ms
+
+======================================================================
+  PIPELINE SUMMARY — Total time: 43h 56m 10s 55ms
+======================================================================
+    Step 1: ✅ PASSED
+    Step 2: ✅ PASSED
+    Step 3: ✅ PASSED
+
+  All steps completed successfully!
+
+  Output files in: outputs/
+  ├── lipinski_descriptors.png
+  ├── mannwhitney_distributions.png
+  ├── fingerprint_analysis.png
+  ├── evaluation_metrics.png
+  ├── roc_curve.png
+  ├── actual_vs_predicted.png
+  ├── shap_global_summary.png
+  ├── shap_dot_plot.png
+  ├── shap_force_active.html
+  ├── shap_force_inactive.html
+  ├── feature_importance_classification.png
+  ├── feature_importance_regression.png
+  ├── feature_importance_comparison.png
+  ├── molecular_substructures_top20.png
+  ├── shap_force_plots_summary.png
+  ├── morgan_fingerprints.csv
+  ├── models/
+  │   ├── regression_model.pkl
+  │   └── classification_model.pkl
+  ├── substructures/
+  │   └── bit_XXX.png (individual)
+  ├── shap_force_plots/
+  │   ├── active/active_rank01-10.png
+  │   └── inactive/inactive_rank01-10.png
+  └── docking/
+      ├── selected_compounds.json
+      ├── docking_results.png
+      ├── docking_results.txt
+      ├── docking_compounds_2d.png
+      ├── docking_instructions.txt
+      ├── receptor.pdbqt
+      ├── active_ligand.sdf / .pdbqt
+      ├── inactive_ligand.sdf / .pdbqt
+      ├── active_docked.pdbqt
+      └── inactive_docked.pdbqt
