@@ -32,8 +32,7 @@ matplotlib seaborn scipy meeko pillow
 | File | Description |
 |------|-------------|
 | qsar_completes.py | Main QSAR pipeline |
-| fix_substructures_final.py | Molecular substructure diagrams |
-| addon_features.py | SHAP force plots |
+| addon_features.py | SHAP force plots & Molecular substructure diagrams |
 | docking_meeko.py | Molecular docking |
 
 ## Reference
