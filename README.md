@@ -16,12 +16,12 @@ Alzheimer's disease using Random Forest and SHAP interpretation.
 8. Molecular Docking (AutoDock Vina)
 
 ## Results
-| Metric    | Our Result | Paper Result |
-|-----------|-----------|--------------|
-| MAPE      | ~11.53%   | 11.10%       |
-| R²        | ~0.7236   | 0.7342       |
-| AUC-ROC   | ~0.8169   | 0.8477       |
-| F1 Score  | ~0.7652   | 0.8768       |
+| Metric    | Our Result | 
+|-----------|-----------|
+| MAPE      |  11.53%   |
+| R²        |  0.7236   |
+| AUC-ROC   |  0.8169   |
+| F1 Score  |  0.7652   |
 
 ## Requirements
 
