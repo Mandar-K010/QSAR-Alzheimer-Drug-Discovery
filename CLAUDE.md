@@ -1,4 +1,4 @@
-# AI_CONTEXT.md
+# CLAUDE.md
 
 This document provides project context, architectural notes, and coding
 guidelines for AI assistants (including Claude) operating on this
